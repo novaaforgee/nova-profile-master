@@ -1,0 +1,55 @@
+name: Build Nova Profile Master APK
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --stacktrace
+
+    - name: Prepare APK Output
+      run: |
+        mkdir -p build-artifacts
+        cp app/build/outputs/apk/debug/app-debug.apk build-artifacts/NovaProfileMaster-v1.0.0.apk
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NovaProfileMaster-v1.0.0-APK
+        path: build-artifacts/NovaProfileMaster-v1.0.0.apk
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v1.0.0
+        name: "Nova Profile Master v1.0.0"
+        body: |
+          ### Nova Profile Master v1.0.0
+          - **Persistent Multi-Instance Engine:** Native OS User Profile & Second Space provisioner.
+          - **Unlink Independence:** Deleting or uninstalling Nova Profile Master will NEVER destroy provisioned cloned apps or their data.
+          - **Zero APK Tampering:** Original official apps remain 100% untouched for full SafetyNet / Play Integrity pass.
+        files: build-artifacts/NovaProfileMaster-v1.0.0.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
