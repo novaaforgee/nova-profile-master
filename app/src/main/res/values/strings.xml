@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Nova Profile Master</string>
+    <string name="admin_label">Nova Space Administrator</string>
+    <string name="admin_description">Enables independent Android User Profile provisioning so cloned apps never delete when manager is uninstalled.</string>
+</resources>
